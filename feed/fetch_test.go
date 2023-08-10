@@ -74,7 +74,7 @@ func TestFetchMany(t *testing.T) {
 	parsedURL, err := url.Parse(srv.URL)
 	require.NoError(t, err)
 
-	f := newFetcher(*parsedURL, 10)
+	f := New(*parsedURL, 10)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -116,7 +116,7 @@ func TestFetchOne(t *testing.T) {
 	parsedURL, err := url.Parse(srv.URL)
 	require.NoError(t, err)
 
-	f := newFetcher(*parsedURL, -1)
+	f := New(*parsedURL, -1)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()

@@ -11,13 +11,13 @@ import (
 	"time"
 )
 
-type fetcher struct {
+type Fetcher struct {
 	cli        *http.Client
 	apiURL     url.URL
 	getManyURL url.URL
 }
 
-func (f *fetcher) getRequest(ctx context.Context, reqURL string) (*http.Response, func(), error) {
+func (f *Fetcher) getRequest(ctx context.Context, reqURL string) (*http.Response, func(), error) {
 	r, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 	if err != nil {
 		return nil, func() {}, fmt.Errorf("init request: %w", err)
@@ -41,7 +41,7 @@ func (f *fetcher) getRequest(ctx context.Context, reqURL string) (*http.Response
 	return resp, closerFunc, nil
 }
 
-func (f *fetcher) FetchMany(ctx context.Context) ([]NewsletterNewsItem, error) {
+func (f *Fetcher) FetchMany(ctx context.Context) ([]NewsletterNewsItem, error) {
 	resp, closer, err := f.getRequest(ctx, f.getManyURL.String())
 	defer closer()
 
@@ -57,7 +57,7 @@ func (f *fetcher) FetchMany(ctx context.Context) ([]NewsletterNewsItem, error) {
 	return respBody.NewListInformation.NewsletterNewsItems, nil
 }
 
-func (f *fetcher) FetchOne(ctx context.Context, id int) (NewsletterNewsItem, error) {
+func (f *Fetcher) FetchOne(ctx context.Context, id int) (NewsletterNewsItem, error) {
 	getByIdURL := f.apiURL
 	qParams := getByIdURL.Query()
 	qParams.Add("id", strconv.Itoa(id))
@@ -78,14 +78,14 @@ func (f *fetcher) FetchOne(ctx context.Context, id int) (NewsletterNewsItem, err
 	return respBody.NewsArticle, nil
 }
 
-func newFetcher(apiURL url.URL, batchSize int) *fetcher {
+func New(apiURL url.URL, batchSize int) *Fetcher {
 	//we're going to request multiple feed items periodically, so it's better to have prebuilt URL for that instead of making it each time
 	getManyURL := apiURL
 	qParams := getManyURL.Query()
 	qParams.Add("count", strconv.Itoa(batchSize))
 	getManyURL.RawQuery = qParams.Encode()
 
-	return &fetcher{
+	return &Fetcher{
 		apiURL:     apiURL,
 		getManyURL: getManyURL,
 		cli: &http.Client{
