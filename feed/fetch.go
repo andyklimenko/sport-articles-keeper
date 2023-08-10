@@ -30,7 +30,7 @@ func (f *Fetcher) getRequest(ctx context.Context, reqURL string) (*http.Response
 
 	closerFunc := func() {
 		if err := resp.Body.Close(); err != nil {
-			slog.Error("can't close response body: ", err)
+			slog.Error("can't close response body", slog.Any("error", err))
 		}
 	}
 
