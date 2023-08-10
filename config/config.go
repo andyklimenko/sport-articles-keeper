@@ -8,8 +8,9 @@ import (
 )
 
 type Config struct {
-	Feed   Feed
-	Poller Poller
+	Feed    Feed
+	Poller  Poller
+	Storage Storage
 }
 
 func (c *Config) Load() error {
@@ -19,6 +20,10 @@ func (c *Config) Load() error {
 
 	if err := c.Poller.load("poll"); err != nil {
 		return fmt.Errorf("load poller config: %w", err)
+	}
+
+	if err := c.Storage.load("storage"); err != nil {
+		return fmt.Errorf("load storage config: %w", err)
 	}
 
 	return nil
