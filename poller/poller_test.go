@@ -23,10 +23,9 @@ func (m *mckFetcher) FetchMany(ctx context.Context) ([]feed.NewsletterNewsItem, 
 
 func TestPollingNoErrors(t *testing.T) {
 	var f mckFetcher
-	readCh := make(chan []feed.NewsletterNewsItem)
 
 	const interval = 100 * time.Millisecond
-	p, err := New(interval, &f, readCh)
+	p, readCh, err := New(interval, &f)
 	require.NoError(t, err)
 
 	expected := []feed.NewsletterNewsItem{
@@ -64,10 +63,9 @@ func TestPollingNoErrors(t *testing.T) {
 
 func TestPollingWithErrors(t *testing.T) {
 	var f mckFetcher
-	readCh := make(chan []feed.NewsletterNewsItem)
 
 	const interval = 100 * time.Millisecond
-	p, err := New(interval, &f, readCh)
+	p, readCh, err := New(interval, &f)
 	require.NoError(t, err)
 
 	f.On("FetchMany", mock.Anything).Return([]feed.NewsletterNewsItem{}, errors.New("horrible failure occurred"))

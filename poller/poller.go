@@ -17,13 +17,15 @@ type fetcher interface {
 type Poller struct {
 	fetcher           fetcher
 	scheduler         *gocron.Scheduler
-	newsletterBatchCh chan<- []feed.NewsletterNewsItem
+	newsletterBatchCh chan []feed.NewsletterNewsItem
 }
 
+// StartAsync should be call to start polling
 func (p *Poller) StartAsync() {
 	p.scheduler.StartAsync()
 }
 
+// Stop must be called for graceful shutdown sake
 func (p *Poller) Stop() {
 	p.scheduler.Stop()
 	close(p.newsletterBatchCh)
@@ -43,17 +45,18 @@ func (p *Poller) poll() {
 	}()
 }
 
-func New(interval time.Duration, f fetcher, newsletterBatchCh chan<- []feed.NewsletterNewsItem) (*Poller, error) {
+// New returns the poller and the channel to be used by consumer for reading the data fetched. The channel will be closed automatically during graceful shutdown.
+func New(interval time.Duration, f fetcher) (*Poller, <-chan []feed.NewsletterNewsItem, error) {
 	p := Poller{
 		fetcher:           f,
-		newsletterBatchCh: newsletterBatchCh,
+		newsletterBatchCh: make(chan []feed.NewsletterNewsItem),
 		scheduler:         gocron.NewScheduler(time.UTC),
 	}
 
 	_, err := p.scheduler.Every(interval).Do(p.poll)
 	if err != nil {
-		return nil, fmt.Errorf("initiate periodic job execution: %w", err)
+		return nil, nil, fmt.Errorf("initiate periodic job execution: %w", err)
 	}
 
-	return &p, nil
+	return &p, p.newsletterBatchCh, nil
 }
