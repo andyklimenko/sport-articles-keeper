@@ -18,9 +18,9 @@ type mckRepo struct {
 	insertManyCh chan []model.Article
 }
 
-func (r *mckRepo) GetMany(ctx context.Context, filter storage.ArticleFilter) ([]model.Article, error) {
+func (r *mckRepo) GetMany(ctx context.Context, filter storage.ArticleFilter) ([]model.Article, int64, error) {
 	res := r.Called(ctx, filter)
-	return res.Get(0).([]model.Article), res.Error(1)
+	return res.Get(0).([]model.Article), int64(res.Int(1)), res.Error(2)
 }
 
 func (r *mckRepo) InsertMany(ctx context.Context, articles []model.Article) error {
@@ -86,10 +86,9 @@ func TestConsumer(t *testing.T) {
 		ArticleIDs: []int{1, 2, 3},
 	}
 
-	r.On("GetMany", mock.Anything, expectedFilter).Return(articlesWeAlreadyHave, nil).Once()
+	r.On("GetMany", mock.Anything, expectedFilter).Return(articlesWeAlreadyHave, 2, nil).Once()
 	r.On("InsertMany",
 		mock.Anything,
-		//mock.MatchedBy(func(ctx context.Context) bool { return true }),
 		mock.MatchedBy(func(in []model.Article) bool {
 			if len(in) != 1 {
 				return false

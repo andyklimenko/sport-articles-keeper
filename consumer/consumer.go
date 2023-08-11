@@ -10,7 +10,7 @@ import (
 )
 
 type repo interface {
-	GetMany(ctx context.Context, filter storage.ArticleFilter) ([]model.Article, error)
+	GetMany(ctx context.Context, filter storage.ArticleFilter) ([]model.Article, int64, error)
 	InsertMany(ctx context.Context, articles []model.Article) error
 }
 

@@ -32,7 +32,7 @@ func (c *Consumer) onBatch(batch []feed.NewsletterNewsItem) error {
 	filter := storage.ArticleFilter{
 		ArticleIDs: articleIDs,
 	}
-	existingArticles, err := c.repo.GetMany(ctx, filter)
+	existingArticles, _, err := c.repo.GetMany(ctx, filter)
 	if err != nil && !errors.Is(err, storage.ErrNotFound) {
 		return fmt.Errorf("looking for existing articles: %w", err)
 	}

@@ -11,6 +11,7 @@ type Config struct {
 	Feed    Feed
 	Poller  Poller
 	Storage Storage
+	Server  Server
 }
 
 func (c *Config) Load() error {
@@ -26,6 +27,9 @@ func (c *Config) Load() error {
 		return fmt.Errorf("load storage config: %w", err)
 	}
 
+	if err := c.Server.load("server"); err != nil {
+		return fmt.Errorf("load http server config: %w", err)
+	}
 	return nil
 }
 

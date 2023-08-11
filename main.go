@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/andyklimenko/sport-articles-keeper/api"
 	"github.com/andyklimenko/sport-articles-keeper/config"
 	"github.com/andyklimenko/sport-articles-keeper/consumer"
 	"github.com/andyklimenko/sport-articles-keeper/feed"
@@ -35,6 +36,7 @@ func main() {
 	}
 
 	consumer.Start(repo, feedClient, consumeCh)
+	a := api.New(cfg.Server, repo)
 
 	stopCh := make(chan os.Signal, 1)
 	signal.Notify(stopCh, syscall.SIGTERM, syscall.SIGINT)
@@ -42,6 +44,8 @@ func main() {
 		<-stopCh
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
+
+		a.GracefulShutdown(ctx)
 
 		p.Stop()
 
@@ -53,5 +57,9 @@ func main() {
 	}()
 
 	slog.Info("Starting polling..")
-	p.StartBlocking()
+	p.StartAsync()
+
+	slog.Info("Starting http server at", slog.Any("addr", cfg.Server.Address))
+	err = a.ListenAndServe()
+	slog.Info("bye bye", slog.Any("error", err))
 }

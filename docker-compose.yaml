@@ -10,7 +10,7 @@ services:
       - MONGO_INITDB_DATABASE=articles
     volumes:
       - ./infra/mongo/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
-  articles:
+  article-keeper:
     container_name: article-keeper
     restart: on-failure
     depends_on:
@@ -23,3 +23,4 @@ services:
       - POLL_INTERVAL=1m
       - STORAGE_DB_NAME=articles
       - STORAGE_URI=mongodb://database:27017/articles
+      - SERVER_ADDR=0.0.0.0:8080
