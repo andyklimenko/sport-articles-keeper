@@ -32,19 +32,19 @@ func TestPollingNoErrors(t *testing.T) {
 		{
 			ArticleURL:        "https://www.htafc.com/news/2023/august/p4p11-raises-over-73000-for-charity/",
 			NewsArticleID:     612072,
-			PublishDate:       time.Date(2023, 8, 9, 15, 0, 0, 0, time.UTC),
+			PublishDate:       "2023-08-09 15:00:00",
 			Taxonomies:        "Community",
 			TeaserText:        "Yorkshire Air Ambulance, Huddersfield Town Foundation, Andy&#8217;s Man Club and Ruddi&#8217;s Retreat receive over £18,000 each",
 			ThumbnailImageURL: "https://www.htafc.com/api/image/feedassets/f81c3def-ba05-4e1b-bd46-7f499c6def88/Medium/p4p-cheque-2023.png",
 			Title:             "P4P11 RAISES OVER £73,000 FOR CHARITY!",
-			LastUpdateDate:    time.Date(2023, 8, 9, 15, 0, 10, 0, time.UTC),
+			LastUpdateDate:    "2023-08-10 02:00:30",
 			IsPublished:       true,
 		},
 	}
 
 	f.On("FetchMany", mock.Anything).Return(expected, nil)
 
-	p.StartAsync()
+	p.scheduler.StartAsync()
 
 	select {
 	case <-time.After(2 * interval):
@@ -70,7 +70,7 @@ func TestPollingWithErrors(t *testing.T) {
 
 	f.On("FetchMany", mock.Anything).Return([]feed.NewsletterNewsItem{}, errors.New("horrible failure occurred"))
 
-	p.StartAsync()
+	p.scheduler.StartAsync()
 
 	select {
 	case <-time.After(2 * interval):

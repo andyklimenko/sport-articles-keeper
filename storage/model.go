@@ -1,8 +1,6 @@
 package storage
 
 import (
-	"time"
-
 	"github.com/andyklimenko/sport-articles-keeper/model"
 )
 
@@ -12,14 +10,15 @@ type article struct {
 	TeamID        string      `bson:"teamId"`
 	OptaMatchId   interface{} `bson:"optaMatchId"`
 	Title         string      `bson:"title"`
+	Subtitle      string      `bson:"subtitle"`
 	Type          []string    `bson:"type"`
 	Teaser        string      `bson:"teaser"`
 	Content       string      `bson:"content"`
 	Url           string      `bson:"url"`
 	ImageUrl      string      `bson:"imageUrl"`
-	GalleryUrls   interface{} `bson:"galleryUrls"`
-	VideoUrl      interface{} `bson:"videoUrl"`
-	Published     time.Time   `bson:"published"`
+	GalleryUrls   string      `bson:"galleryUrls"`
+	VideoUrl      string      `bson:"videoUrl"`
+	Published     string      `bson:"published"`
 }
 
 func (a article) model() model.Article {
@@ -29,6 +28,7 @@ func (a article) model() model.Article {
 		TeamID:        a.TeamID,
 		OptaMatchId:   a.OptaMatchId,
 		Title:         a.Title,
+		Subtitle:      a.Subtitle,
 		Type:          a.Type,
 		Teaser:        a.Teaser,
 		Content:       a.Content,

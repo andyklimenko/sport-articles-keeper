@@ -20,9 +20,9 @@ type Poller struct {
 	newsletterBatchCh chan []feed.NewsletterNewsItem
 }
 
-// StartAsync should be call to start polling
-func (p *Poller) StartAsync() {
-	p.scheduler.StartAsync()
+// StartBlocking should be call to start polling
+func (p *Poller) StartBlocking() {
+	p.scheduler.StartBlocking()
 }
 
 // Stop must be called for graceful shutdown sake

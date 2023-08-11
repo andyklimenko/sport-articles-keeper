@@ -16,7 +16,8 @@ var (
 var httpUrlRegExp = regexp.MustCompile(`(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})? `)
 
 type Feed struct {
-	ApiURL url.URL
+	ApiURL    url.URL
+	BatchSize int
 }
 
 func (f *Feed) load(envPrefix string) error {
@@ -37,6 +38,9 @@ func (f *Feed) load(envPrefix string) error {
 	}
 
 	f.ApiURL = *parsed
+
+	v.SetDefault("batch.size", 50)
+	f.BatchSize = v.GetInt("batch.size")
 
 	return nil
 }

@@ -13,7 +13,7 @@ import (
 
 type Fetcher struct {
 	cli        *http.Client
-	apiURL     url.URL
+	getOneURL  url.URL
 	getManyURL url.URL
 }
 
@@ -54,11 +54,11 @@ func (f *Fetcher) FetchMany(ctx context.Context) ([]NewsletterNewsItem, error) {
 		return nil, fmt.Errorf("decode response body: %w", err)
 	}
 
-	return respBody.NewListInformation.NewsletterNewsItems, nil
+	return respBody.NewsletterNewsItems, nil
 }
 
 func (f *Fetcher) FetchOne(ctx context.Context, id int) (NewsletterNewsItem, error) {
-	getByIdURL := f.apiURL
+	getByIdURL := f.getOneURL
 	qParams := getByIdURL.Query()
 	qParams.Add("id", strconv.Itoa(id))
 	getByIdURL.RawQuery = qParams.Encode()
@@ -78,16 +78,16 @@ func (f *Fetcher) FetchOne(ctx context.Context, id int) (NewsletterNewsItem, err
 	return respBody.NewsArticle, nil
 }
 
-func New(apiURL url.URL, batchSize int) *Fetcher {
+func New(apiRootURL url.URL, batchSize int) *Fetcher {
 	//we're going to request multiple feed items periodically, so it's better to have prebuilt URL for that instead of making it each time
-	getManyURL := apiURL
+	getManyURL := apiRootURL.JoinPath("/getnewlistinformation")
 	qParams := getManyURL.Query()
 	qParams.Add("count", strconv.Itoa(batchSize))
 	getManyURL.RawQuery = qParams.Encode()
 
 	return &Fetcher{
-		apiURL:     apiURL,
-		getManyURL: getManyURL,
+		getOneURL:  *apiRootURL.JoinPath("/getnewsarticleinformation"),
+		getManyURL: *getManyURL,
 		cli: &http.Client{
 			Timeout: 3 * time.Second,
 		},

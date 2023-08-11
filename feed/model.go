@@ -1,32 +1,32 @@
 package feed
 
-import "time"
+import (
+	"encoding/xml"
+)
 
 type NewsletterNewsItem struct {
-	ArticleURL        string
-	NewsArticleID     int
-	PublishDate       time.Time
-	Taxonomies        string
-	TeaserText        string
-	Subtitle          string
-	ThumbnailImageURL string
-	Title             string
-	BodyText          string
-	GalleryImageURLs  string
-	VideoURL          string
-	OptaMatchId       string
-	LastUpdateDate    time.Time
-	IsPublished       bool
-}
-
-type newListInformation struct {
-	NewsletterNewsItems []NewsletterNewsItem `xml:"NewsletterNewsItems>NewsletterNewsItem"`
+	ArticleURL        string `xml:"ArticleURL"`
+	NewsArticleID     int    `xml:"NewsArticleID"`
+	PublishDate       string `xml:"PublishDate"`
+	Taxonomies        string `xml:"Taxonomies"`
+	TeaserText        string `xml:"TeaserText"`
+	Subtitle          string `xml:"Subtitle"`
+	ThumbnailImageURL string `xml:"ThumbnailImageURL"`
+	Title             string `xml:"Title"`
+	BodyText          string `xml:"BodyText"`
+	GalleryImageURLs  string `xml:"GalleryImageURLs"`
+	VideoURL          string `xml:"VideoURL"`
+	OptaMatchId       string `xml:"OptaMatchId"`
+	LastUpdateDate    string `xml:"LastUpdateDate"`
+	IsPublished       bool   `xml:"IsPublished"`
 }
 
 type fetchManyResp struct {
-	NewListInformation newListInformation `xml:"NewListInformation"`
+	XMLName             xml.Name             `xml:"NewListInformation"`
+	NewsletterNewsItems []NewsletterNewsItem `xml:"NewsletterNewsItems>NewsletterNewsItem"`
 }
 
 type fetchOneResp struct {
+	XMLName     xml.Name           `xml:"NewsArticleInformation"`
 	NewsArticle NewsletterNewsItem `xml:"NewsArticle"`
 }
